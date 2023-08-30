@@ -1,9 +1,11 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dbFilePath = path.join(__dirname, 'db', 'db.json');
 
 //middleware
 app.use(express.urlencoded({extended: true}));
@@ -21,40 +23,50 @@ app.get('*', (req, res) => {
 
 //API routes 
 app.get('/api/notes', (req, res) => {
-    fs.readFile('db.json', 'utf8', (err, data) => {
+    fs.readFile(dbFilePath, 'utf8', (err, data) => {
         if (err) throw err;
         const notes = JSON.parse(data);
         res.json(notes);
     });
 });
 
-app.post('api/notes', (req, res) => {
-    fs.readFile('db.json', 'utf8', (err, data) => {
+app.post('/api/notes', (req, res) => {
+    fs.readFile(dbFilePath, 'utf8', (err, data) => {
         if (err) throw err;
         const notes = JSON.parse(data);
         const newNote = req.body;
-        newNote.id = notes.length + 1;
+        newNote.id = uuidv4(); //generate a ID
 
         notes.push(newNote);
 
-        fs.writeFile('db.json', JSON.stringify(notes), (err) => {
+        fs.writeFile(dbFilePath, JSON.stringify(notes), (err) => {
             if (err) throw err;
             res.json(newNote);
         });
     });
 });
 
+const saveNote = (note) =>
+  fetch('/api/notes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+
+    },
+    body: JSON.stringify(note),
+  });
+
 //Delete route
 app.delete('/api/notes/:id', (req, res) => {
     const noteId = parseInt(req.params.id);
 
-    fs.readFile('db.json', 'utf8', (err, data) => {
+    fs.readFile(dbFilePath, 'utf8', (err, data) => {
         if (err) throw err;
         let notes =JSON.parse(data);
 
         notes = notes.filter((note) => note.id !== noteId);
 
-        fs.writeFile('db.json', JSON.stringify(notes), (err) => {
+        fs.writeFile(dbFilePath, JSON.stringify(notes), (err) => {
             if (err) throw err;
             res.json({ message: 'Note deleted' });
         });
@@ -63,5 +75,5 @@ app.delete('/api/notes/:id', (req, res) => {
 
 //start server
 app.listen(PORT, () => {
-    console.log('Server listening on PORT ${PORT}');
+    console.log(`Server listening on PORT ${PORT}`);
 });
