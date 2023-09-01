@@ -33,11 +33,11 @@ const getNotes = () =>
     },
   });
 
-const saveNote = (note) =>
+  const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json', 
     },
     body: JSON.stringify(note),
   });
@@ -71,11 +71,14 @@ const handleNoteSave = () => {
     title: noteTitle.value,
     text: noteText.value,
   };
-  saveNote(newNote).then(() => {
-    getAndRenderNotes();
-    renderActiveNote();
-  });
+  saveNote(newNote)
+    .then(response => response.json())
+    .then(savedNote => {
+      getAndRenderNotes();
+      renderActiveNote();
+    });
 };
+
 
 // Delete the clicked note
 const handleNoteDelete = (e) => {
@@ -166,7 +169,7 @@ const renderNoteList = async (notes) => {
   });
 
   if (window.location.pathname === '/notes') {
-    noteListItems.forEach((note) => noteList[0].append(note));
+    noteListItems.forEach((note) => noteList[0].appendChild(note));
   }
 };
 
