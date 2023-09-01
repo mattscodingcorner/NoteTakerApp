@@ -10,21 +10,16 @@ Goal of the project is to create an application called Note Taker that can be us
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
-- [Contributing](#contributing)
-- [Tests](#tests)
 - [Questions](#questions)
 
 
 ## Installation
 
-to install project denpendencies run:
-
-
-npm i
+No installation needed see gif below for usage. 
 
 ## Usage
 
-N/A
+![gif](./public/notetakerapp.gif)
 
 ## License
 
